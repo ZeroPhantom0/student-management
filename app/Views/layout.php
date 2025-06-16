@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= $title ?? 'Student Management System' ?></title>
@@ -27,14 +30,58 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <?php if(session()->get('isLoggedIn')): ?>
-          <li class="nav-item"><a class="nav-link" href="<?= base_url('/dashboard') ?>"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link" href="<?= base_url('/students') ?>"><i class="bi bi-people"></i> Students</a></li>
-          <li class="nav-item"><a class="nav-link" href="<?= base_url('/courses') ?>"><i class="bi bi-journal-bookmark"></i> Courses</a></li>
-          <li class="nav-item"><a class="nav-link" href="<?= base_url('/enrollments') ?>"><i class="bi bi-ui-checks"></i> Enrollments</a></li>
-          <li class="nav-item"><a class="nav-link" href="<?= base_url('/logout') ?>"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+        <?php if (session('isLoggedIn')): ?>
+          <!-- Common items for all logged in users -->
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('/dashboard') ?>">
+              <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+          </li>
+          
+          <!-- Regular user items -->
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('/students') ?>">
+              <i class="bi bi-people"></i> Students
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('/courses') ?>">
+              <i class="bi bi-journal-bookmark"></i> Courses
+            </a>
+          </li>
+          
+          <!-- Show enrollments only for non-admins or if you want it for all -->
+          <?php if(session('user.role') !== 'admin'): ?>
+            <li class="nav-item">
+              <a class="nav-link" href="<?= base_url('/enrollments') ?>">
+                <i class="bi bi-ui-checks"></i> My Enrollments
+              </a>
+            </li>
+          <?php endif; ?>
+          
+          <!-- Common items -->
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('/files') ?>">
+              <i class="bi bi-file-earmark"></i> Files
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="<?= site_url('/logout') ?>">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </li>
         <?php else: ?>
-          <li class="nav-item"><a class="nav-link" href="<?= base_url('/signup') ?>"><i class="bi bi-box-arrow-in-right"></i> Sign Up</a></li>
+          <!-- Guest items -->
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('/login') ?>">
+              <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('/signup') ?>">
+              <i class="bi bi-person-plus"></i> Sign Up
+            </a>
+          </li>
         <?php endif; ?>
       </ul>
     </div>

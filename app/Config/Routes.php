@@ -6,47 +6,121 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
+// Error Handling
+$routes->set404Override('App\Controllers\Errors::show404');
 
-$routes->setDefaultController('Auth');
-$routes->setDefaultMethod('login');
+// Default Controller
+$routes->setDefaultController('Home');
+$routes->setDefaultMethod('index');
 
-// AUTH ROUTES
-$routes->get('/', 'Auth::login');                   // Login page
-$routes->get('/login', 'Auth::login');
-$routes->post('/login', 'Auth::loginPost');
+// PUBLIC ROUTES (no authentication required)
+$routes->group('', ['filter' => 'noauth'], function($routes) {
+    // Authentication Routes
+    $routes->get('login', 'Auth::login');
+    $routes->post('login', 'Auth::loginPost');
+    $routes->get('signup', 'Auth::signup');
+    $routes->post('signup', 'Auth::signupPost');
+    $routes->get('forgot-password', 'Auth::forgotPassword');
+    $routes->post('process-forgot-password', 'Auth::processForgotPassword');
+});
 
-$routes->get('/signup', 'Auth::signup');
-$routes->post('/signup', 'Auth::signupPost');
+// Special unfiltered routes
+    $routes->match(['get', 'post'], 'logout', 'Auth::logout');
 
-$routes->get('/logout', 'Auth::logout');
 
-// DASHBOARD
-$routes->get('/dashboard', 'Home::index', ['filter' => 'authGuard']);
+// AUTHENTICATED USER ROUTES
+$routes->group('', ['filter' => 'authGuard'], function($routes) {
+    // Dashboard
+    $routes->get('/', 'Home::index');
+    $routes->get('dashboard', 'Home::index');
+    
+    // Profile
+    $routes->get('profile', 'Profile::index');
+    $routes->post('profile/update', 'Profile::update');
+    
+    // Files Module
+    $routes->group('files', function($routes) {
+        $routes->get('/', 'Files::index');
+        $routes->match(['get', 'post'], 'upload', 'Files::upload');
+        $routes->post('store', 'Files::store');
+        $routes->get('view/(:num)', 'Files::view/$1');
+        $routes->get('download/(:num)', 'Files::download/$1');
+        $routes->get('delete/(:num)', 'Files::delete/$1');
+    });
+    
+    // Students Module
+    $routes->group('students', function($routes) {
+        $routes->get('/', 'Students::index');
+        $routes->match(['get', 'post'], 'create', 'Students::create');
+        $routes->post('store', 'Students::store');
+        $routes->match(['get', 'post'], 'edit/(:num)', 'Students::edit/$1');
+        $routes->post('update/(:num)', 'Students::update/$1');
+        $routes->get('delete/(:num)', 'Students::delete/$1');
+    });
+    
+    // Courses Module
+    $routes->group('courses', function($routes) {
+        $routes->get('/', 'Courses::index');
+        $routes->match(['get', 'post'], 'create', 'Courses::create');
+        $routes->post('store', 'Courses::store');
+        $routes->match(['get', 'post'], 'edit/(:num)', 'Courses::edit/$1');
+        $routes->post('update/(:num)', 'Courses::update/$1');
+        $routes->get('delete/(:num)', 'Courses::delete/$1');
+    });
+    
+    // Enrollments Module
+    $routes->group('enrollments', function($routes) {
+        $routes->get('/', 'Enrollments::index');
+        $routes->match(['get', 'post'], 'create', 'Enrollments::create');
+        $routes->post('store', 'Enrollments::store');
+        $routes->match(['get', 'post'], 'edit/(:num)', 'Enrollments::edit/$1');
+        $routes->post('update/(:num)', 'Enrollments::update/$1');
+        $routes->get('delete/(:num)', 'Enrollments::delete/$1');
+    });
+});
 
-// STUDENT ROUTES (with auth filter)
-$routes->get('/students', 'Students::index', ['filter' => 'authGuard']);
-$routes->get('/students/create', 'Students::create', ['filter' => 'authGuard']);
-$routes->post('/students/store', 'Students::store', ['filter' => 'authGuard']);
-$routes->get('/students/edit/(:num)', 'Students::edit/$1', ['filter' => 'authGuard']);
-$routes->post('/students/update/(:num)', 'Students::update/$1', ['filter' => 'authGuard']);
-$routes->get('/students/delete/(:num)', 'Students::delete/$1', ['filter' => 'authGuard']);
+// ADMIN ROUTES (requires both authentication and admin privileges)
+$routes->group('admin', ['filter' => ['authGuard', 'adminGuard'], 'namespace' => 'App\Controllers\Admin'], function($routes) {
+    $routes->get('users', 'Users::index');
+    $routes->match(['get', 'post'], 'users/create', 'Users::create');
+    $routes->post('users/store', 'Users::store');
+    $routes->get('users/edit/(:num)', 'Users::edit/$1');
+    $routes->post('users/update/(:num)', 'Users::update/$1');
+    $routes->get('users/delete/(:num)', 'Users::delete/$1');
+    
+    $routes->get('files', 'Files::index', ['as' => 'admin.files']);
+    
+    // System Administration
+    $routes->get('settings', 'Settings::index');
+    $routes->post('settings/update', 'Settings::update');
+    
+    // Temporary admin creation (remove in production)
+    $routes->get('create-admin', 'Auth::createAdmin', ['filter' => null]);
+});
 
-// COURSE ROUTES
-$routes->get('/courses', 'Courses::index', ['filter' => 'authGuard']);
-$routes->get('/courses/create', 'Courses::create', ['filter' => 'authGuard']);
-$routes->post('/courses/store', 'Courses::store', ['filter' => 'authGuard']);
-$routes->get('/courses/edit/(:num)', 'Courses::edit/$1', ['filter' => 'authGuard']);
-$routes->post('/courses/update/(:num)', 'Courses::update/$1', ['filter' => 'authGuard']);
-$routes->get('/courses/delete/(:num)', 'Courses::delete/$1', ['filter' => 'authGuard']);
-
-// ENROLLMENT ROUTES
-$routes->get('/enrollments', 'Enrollments::index', ['filter' => 'authGuard']);
-$routes->get('/enrollments/create', 'Enrollments::create', ['filter' => 'authGuard']);
-$routes->post('/enrollments/store', 'Enrollments::store', ['filter' => 'authGuard']);
-$routes->get('/enrollments/edit/(:num)', 'Enrollments::edit/$1', ['filter' => 'authGuard']);
-$routes->post('/enrollments/update/(:num)', 'Enrollments::update/$1', ['filter' => 'authGuard']);
-$routes->get('/enrollments/delete/(:num)', 'Enrollments::delete/$1', ['filter' => 'authGuard']);
-
-$routes->get('/create-admin', 'Auth::createAdmin');
-$routes->get('/test-password', 'Test::password');
-
+// API ROUTES
+$routes->group('api', ['filter' => 'apiAuth', 'namespace' => 'App\Controllers\Api'], function($routes) {
+    // Courses API
+    $routes->group('courses', function($routes) {
+        $routes->get('/', 'CoursesApi::index');
+        $routes->get('(:num)', 'CoursesApi::show/$1');
+        $routes->post('/', 'CoursesApi::create');
+        $routes->put('(:num)', 'CoursesApi::update/$1');
+        $routes->delete('(:num)', 'CoursesApi::delete/$1');
+    });
+    
+    // Students API
+    $routes->group('students', function($routes) {
+        $routes->get('/', 'StudentsApi::index');
+        $routes->get('(:num)', 'StudentsApi::show/$1');
+        $routes->post('/', 'StudentsApi::create');
+        $routes->put('(:num)', 'StudentsApi::update/$1');
+        $routes->delete('(:num)', 'StudentsApi::delete/$1');
+    });
+    
+    // Users API (admin only)
+    $routes->group('users', ['filter' => 'adminGuard'], function($routes) {
+        $routes->get('/', 'UsersApi::index');
+        $routes->get('(:num)', 'UsersApi::show/$1');
+    });
+});

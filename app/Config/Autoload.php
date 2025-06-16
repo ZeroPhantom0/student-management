@@ -41,6 +41,8 @@ class Autoload extends AutoloadConfig
      */
     public $psr4 = [
         APP_NAMESPACE => APPPATH,
+        'App' => APPPATH,
+        'App\Models' => APPPATH . 'Models',
     ];
 
     /**
@@ -90,5 +92,5 @@ class Autoload extends AutoloadConfig
      *
      * @var list<string>
      */
-    public $helpers = [];
+    public $helpers = ['form', 'url', 'file'];
 }

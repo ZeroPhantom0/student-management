@@ -16,6 +16,8 @@
         <?php endif; ?>
 
         <form action="<?= base_url('/signup') ?>" method="post">
+          <?= csrf_field() ?> <!-- Add this line -->
+          
           <div class="mb-3">
             <label class="form-label"><i class="bi bi-person-fill"></i> Name</label>
             <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
@@ -31,6 +33,8 @@
             <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
           </div>
 
+          <input type="hidden" name="role" value="user">
+          
           <div class="d-grid">
             <button class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Register</button>
           </div>

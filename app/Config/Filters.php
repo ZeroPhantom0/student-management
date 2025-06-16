@@ -16,16 +16,13 @@ use CodeIgniter\Filters\SecureHeaders;
 class Filters extends BaseFilters
 {
     /**
-     * Configures aliases for Filter classes to
-     * make reading things nicer and simpler.
-     *
-     * @var array<string, class-string|list<class-string>>
-     *
-     * [filter_name => classname]
-     * or [filter_name => [classname1, classname2, ...]]
+     * Configures aliases for Filter classes
      */
     public array $aliases = [
+        'noauth'        => \App\Filters\NoAuthFilter::class, // Add this line
         'authGuard'     => \App\Filters\AuthGuard::class,
+        'adminGuard'    => \App\Filters\AdminGuard::class,
+        'apiAuth'       => \App\Filters\ApiAuth::class,
         'csrf'          => CSRF::class, 
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
@@ -38,71 +35,84 @@ class Filters extends BaseFilters
     ];
 
     /**
-     * List of special required filters.
-     *
-     * The filters listed here are special. They are applied before and after
-     * other kinds of filters, and always applied even if a route does not exist.
-     *
-     * Filters set by default provide framework functionality. If removed,
-     * those functions will no longer work.
-     *
-     * @see https://codeigniter.com/user_guide/incoming/filters.html#provided-filters
-     *
-     * @var array{before: list<string>, after: list<string>}
+     * List of special required filters
      */
     public array $required = [
         'before' => [
-            'forcehttps', // Force Global Secure Requests
-            'pagecache',  // Web Page Caching
+            'forcehttps',
         ],
         'after' => [
-            'pagecache',   // Web Page Caching
-            'performance', // Performance Metrics
-            'toolbar',     // Debug Toolbar
+            'performance',
+            'toolbar',
         ],
     ];
 
     /**
-     * List of filter aliases that are always
-     * applied before and after every request.
-     *
-     * @var array<string, array<string, array<string, string>>>|array<string, list<string>>
+     * Global filters
      */
     public array $globals = [
         'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
+            'invalidchars' => [
+                'except' => [
+                    'api/*',
+                    'logout',
+                    'auth/*'
+                ]
+            ],
+            'csrf' => [
+                'except' => [
+                    'api/*',
+                    'logout',
+                    'auth/*'
+                ]
+            ],
         ],
         'after' => [
-            // 'honeypot',
-            // 'secureheaders',
-        ],
+            'secureheaders' => [
+                'except' => [
+                    'api/*'
+                ]
+            ],
+            'toolbar',
+            'performance'
+        ]
     ];
 
     /**
-     * List of filter aliases that works on a
-     * particular HTTP method (GET, POST, etc.).
-     *
-     * Example:
-     * 'POST' => ['foo', 'bar']
-     *
-     * If you use this, you should disable auto-routing because auto-routing
-     * permits any HTTP method to access a controller. Accessing the controller
-     * with a method you don't expect could bypass the filter.
-     *
-     * @var array<string, list<string>>
+     * Filter aliases for URI patterns
      */
-    public array $methods = [];
-
-    /**
-     * List of filter aliases that should run on any
-     * before or after URI patterns.
-     *
-     * Example:
-     * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
-     *
-     * @var array<string, array<string, list<string>>>
-     */
-    public array $filters = [];
+    public array $filters = [
+        'noauth' => [
+            'before' => [
+                'auth*',
+                'login*',
+                'signup*',
+                'forgot-password*',
+            ],
+            'after' => []
+        ],
+        'apiAuth' => [
+            'before' => [
+                'api/*'
+            ]
+        ],
+        'authGuard' => [
+            'before' => [
+                'dashboard*',
+                'files*',
+                'students*',
+                'courses*',
+                'enrollments*',
+                'profile*'
+            ]
+        ],
+        'adminGuard' => [
+            'before' => [
+                'admin*',
+                'users*',
+                'settings*'
+            ],
+            'after' => []
+        ]
+    ];
 }
