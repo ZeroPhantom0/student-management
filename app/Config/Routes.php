@@ -100,7 +100,7 @@ $routes->group('admin', ['filter' => ['authGuard', 'adminGuard'], 'namespace' =>
 
 // API ROUTES
 $routes->group('api', ['filter' => 'apiAuth', 'namespace' => 'App\Controllers\Api'], function($routes) {
-    // Courses API
+    
     $routes->group('courses', function($routes) {
         $routes->get('/', 'CoursesApi::index');
         $routes->get('(:num)', 'CoursesApi::show/$1');
@@ -108,8 +108,7 @@ $routes->group('api', ['filter' => 'apiAuth', 'namespace' => 'App\Controllers\Ap
         $routes->put('(:num)', 'CoursesApi::update/$1');
         $routes->delete('(:num)', 'CoursesApi::delete/$1');
     });
-    
-    // Students API
+
     $routes->group('students', function($routes) {
         $routes->get('/', 'StudentsApi::index');
         $routes->get('(:num)', 'StudentsApi::show/$1');
@@ -117,8 +116,7 @@ $routes->group('api', ['filter' => 'apiAuth', 'namespace' => 'App\Controllers\Ap
         $routes->put('(:num)', 'StudentsApi::update/$1');
         $routes->delete('(:num)', 'StudentsApi::delete/$1');
     });
-    
-    // Users API (admin only)
+   
     $routes->group('users', ['filter' => 'adminGuard'], function($routes) {
         $routes->get('/', 'UsersApi::index');
         $routes->get('(:num)', 'UsersApi::show/$1');

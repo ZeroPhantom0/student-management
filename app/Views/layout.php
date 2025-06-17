@@ -50,14 +50,11 @@
             </a>
           </li>
           
-          <!-- Show enrollments only for non-admins or if you want it for all -->
-          <?php if(session('user.role') !== 'admin'): ?>
             <li class="nav-item">
               <a class="nav-link" href="<?= base_url('/enrollments') ?>">
                 <i class="bi bi-ui-checks"></i> My Enrollments
               </a>
             </li>
-          <?php endif; ?>
           
           <!-- Common items -->
           <li class="nav-item">
