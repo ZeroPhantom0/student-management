@@ -2,7 +2,7 @@
 
 A complete web application for managing students, courses, enrollments, and files with authentication and API support.
 
-![Dashboard Preview](screenshots/dashboard.png)
+![Dashboard Preview](screenshots/dashboard.PNG)
 
 ## Features
 
