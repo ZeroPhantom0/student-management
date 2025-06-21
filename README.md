@@ -75,5 +75,12 @@ Staff	zen@gmail.com	    ako12345
 
 Access the live system at:
 https://student-management3.infinityfreeapp.com
+```
 
+### Technology Used
 
+- PHP with CodeIgniter – Used to build the system’s main features and structure.
+- MySQL – Stores all data like students, courses, and user info.
+- Bootstrap – Helps design a clean and responsive user interface.
+- Git and GitHub – were used for version control and team collaboration
+- Hosting Platforms – XAMPP for local testing, InfinityFree for online deployment.
