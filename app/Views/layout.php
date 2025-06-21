@@ -19,6 +19,7 @@
     .main-content {
       flex: 1;
     }
+
   </style>
 </head>
 <body>
@@ -85,9 +86,13 @@
   </div>
 </nav>
 
-<div class="container mt-4 main-content">
-  <?= $this->renderSection('content') ?>
-</div>
+<div class="d-flex flex-column min-vh-100">
+
+<main class="flex-fill">
+    <div class="container mt-4">
+      <?= $this->renderSection('content') ?>
+    </div>
+  </main>
 
 <footer class="bg-dark text-white text-center py-3 mt-4">
   <small>&copy; <?= date('Y') ?> Student Management System</small>

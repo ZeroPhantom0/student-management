@@ -4,6 +4,7 @@
 <h2><i class="bi bi-person-plus-fill"></i> Add Student</h2>
 
 <form action="<?= base_url('/students/store') ?>" method="post">
+    <?= csrf_field() ?> 
   <div class="mb-3">
     <label class="form-label">Name</label>
     <input type="text" name="name" class="form-control" required>

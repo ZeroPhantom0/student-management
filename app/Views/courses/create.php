@@ -4,6 +4,7 @@
 <h2><i class="bi bi-bookmark-plus-fill"></i> Add Course</h2>
 
 <form action="<?= base_url('/courses/store') ?>" method="post" class="mt-3">
+  <?= csrf_field() ?>
   <div class="mb-3">
     <label class="form-label"><i class="bi bi-journal-text"></i> Course Name</label>
     <input type="text" name="name" class="form-control" placeholder="Enter course name" required>

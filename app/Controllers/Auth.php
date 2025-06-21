@@ -94,7 +94,7 @@ class Auth extends BaseController
                 'id' => $user['id'],
                 'name' => $user['name'],
                 'email' => $user['email'],
-                'role' => $user['role'] ?? 'user'
+                'role' => $user['role'] ?? 'staff'
             ],
             'lastActivity' => time()
         ];
@@ -123,70 +123,64 @@ class Auth extends BaseController
 
 public function signupPost(): RedirectResponse
 {
-    // Validate CSRF token first
+    // Add debug logging
+    log_message('debug', 'SignupPost method called');
+
+    // Validate CSRF token
     if (!$this->validate(['csrf_test_name' => 'required|string'])) {
+        log_message('error', 'CSRF validation failed');
         return redirect()->back()->withInput()->with('error', 'Invalid CSRF token');
     }
 
+    // Enhanced validation rules
     $rules = [
         'name' => 'required|min_length[3]|max_length[100]',
         'email' => 'required|valid_email|is_unique[users.email]',
-        'password' => 'required|min_length[8]|strong_password'
+        'password' => 'required|min_length[8]|strong_password',
+        'password_confirm' => 'required|matches[password]'
     ];
 
     $messages = [
-        'name' => [
-            'required' => 'Full name is required',
-            'min_length' => 'Name must be at least 3 characters',
-            'max_length' => 'Name cannot exceed 100 characters'
-        ],
-        'email' => [
-            'required' => 'Email is required',
-            'valid_email' => 'Please enter a valid email address',
-            'is_unique' => 'This email is already registered'
-        ],
-        'password' => [
-            'required' => 'Password is required',
-            'min_length' => 'Password must be at least 8 characters',
-            'strong_password' => 'Password must contain at least one number, one letter, and one uppercase or special character'
+        'password_confirm' => [
+            'matches' => 'Passwords do not match'
         ]
     ];
 
     if (!$this->validate($rules, $messages)) {
+        log_message('error', 'Validation failed: ' . print_r($this->validator->getErrors(), true));
         return redirect()->back()
             ->withInput()
-            ->with('errors', $this->validator->getErrors());
+            ->with('validation', $this->validator);
     }
 
     $model = new User();
 
-    $userData = [
-        'name' => esc($this->request->getPost('name')),
-        'email' => esc($this->request->getPost('email')),
-        'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-        'role' => 'user'
-    ];
-
     try {
-        if ($model->save($userData)) {
-            // Log activity
-            model('ActivityModel')->insert([
-                'user_id' => $model->getInsertID(),
-                'activity_type' => 'account_creation',
-                'details' => 'New user registered from ' . $this->request->getIPAddress(),
-                'ip_address' => $this->request->getIPAddress()
-            ]);
+        $userData = [
+            'name' => esc($this->request->getPost('name')),
+            'email' => esc($this->request->getPost('email')),
+            'password' => $this->request->getPost('password'), // Will be hashed by model
+            'role' => 'staff',
+            'created_at' => date('Y-m-d H:i:s') // Use current server time
+        ];
 
-            return redirect()->to('/login')
-                ->with('success', 'Registration successful! Please login.');
+        if (!$model->save($userData)) {
+            log_message('error', 'Failed to save user: ' . print_r($model->errors(), true));
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Registration failed. Please try again.');
         }
-    } catch (\Exception $e) {
-        log_message('error', 'Registration error: ' . $e->getMessage());
-    }
 
-    return redirect()->back()
-        ->withInput()
-        ->with('error', 'Registration failed. Please try again.');
+        log_message('info', 'User registered successfully: ' . $userData['email']);
+        return redirect()->to('/login')
+            ->with('success', 'Registration successful! Please login.');
+
+    } catch (\Exception $e) {
+        log_message('error', 'Registration exception: ' . $e->getMessage());
+        return redirect()->back()
+            ->withInput()
+            ->with('error', 'Registration failed. Please try again.');
+    }
 }
 
    public function logout()

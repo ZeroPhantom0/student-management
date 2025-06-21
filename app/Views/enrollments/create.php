@@ -4,6 +4,7 @@
 <h2><i class="bi bi-person-plus-fill"></i> Add Enrollment</h2>
 
 <form action="<?= base_url('/enrollments/store') ?>" method="post" class="mt-3">
+  <?= csrf_field() ?> 
   <div class="mb-3">
     <label class="form-label"><i class="bi bi-person"></i> Student</label>
     <select name="student_id" class="form-select" required>

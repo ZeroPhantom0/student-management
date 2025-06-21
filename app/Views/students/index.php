@@ -4,6 +4,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2><i class="bi bi-people-fill"></i> Student List</h2>
   <a href="<?= base_url('/students/create') ?>" class="btn btn-primary">
+    <?= csrf_field() ?> 
     <i class="bi bi-plus-circle"></i> Add Student
   </a>
 </div>

@@ -4,6 +4,7 @@
 <h2><i class="bi bi-pencil-square"></i> Edit Course</h2>
 
 <form action="<?= base_url('/courses/update/'.$course['id']) ?>" method="post" class="mt-3">
+  <?= csrf_field() ?>
   <div class="mb-3">
     <label class="form-label"><i class="bi bi-journal-text"></i> Course Name</label>
     <input type="text" name="name" class="form-control" value="<?= esc($course['name']) ?>" required>

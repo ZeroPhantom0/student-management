@@ -43,7 +43,10 @@
                                 <td>
                                     <?= esc($file['username'] ?? 'User #'.$file['user_id']) ?>
                                     <?php if($file['user_id'] == session('user.id')): ?>
-                                        <span class="badge bg-info">You</span>
+                                        <span class="badge bg-danger">Admin</span>
+                                    <?php endif; ?>
+                                    <?php if($file['user_id'] !== session('user.id')): ?>
+                                        <span class="badge bg-success">Staff</span>
                                     <?php endif; ?>
                                 </td>
                             <?php endif; ?>

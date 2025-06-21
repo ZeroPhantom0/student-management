@@ -5,6 +5,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2><i class="bi bi-people-fill"></i> Enrollments</h2>
   <a href="<?= base_url('/enrollments/create') ?>" class="btn btn-primary">
+    <?= csrf_field() ?> 
     <i class="bi bi-plus-circle"></i> Add Enrollment
   </a>
 </div>

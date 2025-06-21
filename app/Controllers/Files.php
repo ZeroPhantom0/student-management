@@ -122,7 +122,7 @@ class Files extends BaseController
         $file = $model->find($id);
 
         // Allow access if admin OR file owner
-        if (!$file || (session('user.role') !== 'admin' && $file['user_id'] != session('user.id'))) {
+        if (!$file || (!in_array(session('user.role'), ['admin']) && $file['user_id'] != session('user.id'))) {
             throw PageNotFoundException::forPageNotFound();
         }
 

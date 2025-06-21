@@ -21,11 +21,23 @@ class Students extends BaseController
     public function store()
     {
         $model = new Student();
-        $model->insert([
+        $studentData = [
             'name' => $this->request->getPost('name'),
             'age' => $this->request->getPost('age')
+        ];
+        
+        $model->insert($studentData);
+        
+        // Log activity
+        $activityModel = model('ActivityModel');
+        $activityModel->insert([
+            'user_id' => session()->get('user.id'),
+            'activity_type' => 'student',
+            'details' => 'Added new student: ' . $studentData['name'],
+            'ip_address' => $this->request->getIPAddress()
         ]);
-        return redirect()->to('/students');
+
+        return redirect()->to('/students')->with('success', 'Student added successfully');
     }
 
     public function edit($id)
@@ -39,17 +51,40 @@ class Students extends BaseController
     public function update($id)
     {
         $model = new Student();
-        $model->update($id, [
+        $studentData = [
             'name' => $this->request->getPost('name'),
             'age' => $this->request->getPost('age')
+        ];
+        
+        $model->update($id, $studentData);
+        
+        // Log activity
+        $activityModel = model('ActivityModel');
+        $activityModel->insert([
+            'user_id' => session()->get('user.id'),
+            'activity_type' => 'student',
+            'details' => 'Updated student #' . $id . ': ' . $studentData['name'],
+            'ip_address' => $this->request->getIPAddress()
         ]);
-        return redirect()->to('/students');
+
+        return redirect()->to('/students')->with('success', 'Student updated successfully');
     }
 
     public function delete($id)
     {
         $model = new Student();
+        $student = $model->find($id);
         $model->delete($id);
-        return redirect()->to('/students');
+        
+        // Log activity
+        $activityModel = model('ActivityModel');
+        $activityModel->insert([
+            'user_id' => session()->get('user.id'),
+            'activity_type' => 'student',
+            'details' => 'Deleted student #' . $id . ': ' . $student['name'],
+            'ip_address' => $this->request->getIPAddress()
+        ]);
+
+        return redirect()->to('/students')->with('success', 'Student deleted successfully');
     }
 }

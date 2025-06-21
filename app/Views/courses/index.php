@@ -5,6 +5,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2><i class="bi bi-people-fill"></i>  Course List</h2>
   <a href="<?= base_url('/courses/create') ?>" class="btn btn-primary">
+    <?= csrf_field() ?>
     <i class="bi bi-plus-circle"></i> Add Course
   </a>
 </div>

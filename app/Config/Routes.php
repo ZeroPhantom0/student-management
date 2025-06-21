@@ -99,8 +99,10 @@ $routes->group('admin', ['filter' => ['authGuard', 'adminGuard'], 'namespace' =>
 });
 
 // API ROUTES
+// API ROUTES
 $routes->group('api', ['filter' => 'apiAuth', 'namespace' => 'App\Controllers\Api'], function($routes) {
     
+    // Other API routes
     $routes->group('courses', function($routes) {
         $routes->get('/', 'CoursesApi::index');
         $routes->get('(:num)', 'CoursesApi::show/$1');
@@ -121,4 +123,8 @@ $routes->group('api', ['filter' => 'apiAuth', 'namespace' => 'App\Controllers\Ap
         $routes->get('/', 'UsersApi::index');
         $routes->get('(:num)', 'UsersApi::show/$1');
     });
+
+    // Correct route for activities
+    $routes->get('activities/recent', 'Activities::getRecentActivities');
+
 });
